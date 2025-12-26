@@ -1,9 +1,10 @@
-from androguard.misc import APK
+from androguard.misc import AnalyzeAPK
 from analyzer.permission_engine import check_permissions
 from analyzer.risk_engine import calculate_risk
 
 def analyze_apk(apk_path):
-    a = APK(apk_path)   # lightweight permission analysis
+    # Use official androguard API (stable)
+    a, _, _ = AnalyzeAPK(apk_path)
 
     permissions = a.get_permissions()
     dangerous = check_permissions(permissions)
