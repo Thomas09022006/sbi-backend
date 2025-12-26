@@ -1,0 +1,4 @@
+flask
+androguard
+gunicorn
+flask-cors
