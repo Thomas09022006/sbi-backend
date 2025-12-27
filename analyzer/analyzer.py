@@ -4,7 +4,8 @@ from analyzer.risk_engine import calculate_risk
 
 def analyze_apk(apk_path):
     try:
-        a, _, _ = AnalyzeAPK(apk_path, skip_analysis=True)
+        # ✅ Correct for androguard 4.1.2
+        a, _, _ = AnalyzeAPK(apk_path)
     except Exception as e:
         raise Exception(f"Androguard failed: {e}")
 
