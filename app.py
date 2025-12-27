@@ -21,6 +21,7 @@ os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 def home():
     return "✅ SBI APK Scanner Backend Running"
 
+
 @app.route("/scan", methods=["POST"])
 def scan_apk():
     try:
@@ -46,11 +47,11 @@ def scan_apk():
         if not file.filename.lower().endswith(".apk"):
             return jsonify({"error": "Only APK files allowed"}), 400
 
-        # 4️⃣ Save temporarily
+        # 4️⃣ Save APK temporarily
         apk_path = os.path.join(UPLOAD_FOLDER, file.filename)
         file.save(apk_path)
 
-        # 5️⃣ Static APK analysis (FAST)
+        # 5️⃣ Static APK analysis
         result = analyze_apk(apk_path)
 
         # 6️⃣ Cleanup
@@ -59,12 +60,12 @@ def scan_apk():
         return jsonify(result)
 
     except Exception as e:
-    print("🔥 APK ANALYSIS ERROR:", e)
-    return jsonify({
-        "error": "APK analysis failed",
-        "details": str(e)
-    }), 500
-
+        # 🔥 IMPORTANT: Proper indentation fixed
+        print("🔥 APK ANALYSIS ERROR:", e)
+        return jsonify({
+            "error": "APK analysis failed",
+            "details": str(e)
+        }), 500
 
 
 if __name__ == "__main__":
