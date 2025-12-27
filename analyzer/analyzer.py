@@ -3,10 +3,12 @@ from analyzer.permission_engine import check_permissions
 from analyzer.risk_engine import calculate_risk
 
 def analyze_apk(apk_path):
-    # ⚡ Lightweight static analysis
-    a, _, _ = AnalyzeAPK(apk_path, skip_analysis=True)
+    try:
+        a, _, _ = AnalyzeAPK(apk_path, skip_analysis=True)
+    except Exception as e:
+        raise Exception(f"Androguard failed: {e}")
 
-    permissions = a.get_permissions()
+    permissions = a.get_permissions() or []
     dangerous = check_permissions(permissions)
     score, level = calculate_risk(dangerous)
 

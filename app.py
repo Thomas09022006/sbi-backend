@@ -59,7 +59,12 @@ def scan_apk():
         return jsonify(result)
 
     except Exception as e:
-        return jsonify({"error": str(e)}), 500
+    print("🔥 APK ANALYSIS ERROR:", e)
+    return jsonify({
+        "error": "APK analysis failed",
+        "details": str(e)
+    }), 500
+
 
 
 if __name__ == "__main__":
