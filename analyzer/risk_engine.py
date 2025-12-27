@@ -1,8 +1,5 @@
 def calculate_risk(dangerous_permissions):
-    score = 0
-
-    for p in dangerous_permissions:
-        score += 15
+    score = len(dangerous_permissions) * 15
 
     if score >= 70:
         level = "High Risk"

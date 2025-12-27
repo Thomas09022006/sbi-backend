@@ -4,27 +4,37 @@ from analyzer.analyzer import analyze_apk
 import os
 
 app = Flask(__name__)
-CORS(app)  # allow frontend to connect
+CORS(app)
 
+# ===============================
+# CONFIG
+# ===============================
 UPLOAD_FOLDER = "uploads"
+MAX_SIZE_MB = 8  # 🔴 SAFE LIMIT (avoids SIGKILL on Render)
+
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 
-MAX_SIZE_MB = 8  # 🔴 IMPORTANT: demo size limit (prevents SIGKILL)
+# ===============================
+# ROUTES
+# ===============================
+@app.route("/", methods=["GET"])
+def home():
+    return "✅ SBI APK Scanner Backend Running"
 
 @app.route("/scan", methods=["POST"])
 def scan_apk():
     try:
-        # 1️⃣ Check file exists
+        # 1️⃣ File existence
         if "apk" not in request.files:
-            return jsonify({"error": "APK not found"}), 400
+            return jsonify({"error": "APK file not found"}), 400
 
-        # 2️⃣ Check file size (VERY IMPORTANT)
+        # 2️⃣ File size protection
         if request.content_length is None:
             return jsonify({"error": "Invalid upload"}), 400
 
         if request.content_length > MAX_SIZE_MB * 1024 * 1024:
             return jsonify({
-                "error": f"APK too large. Max allowed size is {MAX_SIZE_MB} MB for demo."
+                "error": f"APK too large. Max allowed {MAX_SIZE_MB} MB (demo limit)"
             }), 413
 
         file = request.files["apk"]
@@ -33,28 +43,23 @@ def scan_apk():
         if file.filename == "":
             return jsonify({"error": "No file selected"}), 400
 
-        if not file.filename.endswith(".apk"):
-            return jsonify({"error": "Invalid file type"}), 400
+        if not file.filename.lower().endswith(".apk"):
+            return jsonify({"error": "Only APK files allowed"}), 400
 
-        # 4️⃣ Save APK temporarily
-        path = os.path.join(UPLOAD_FOLDER, file.filename)
-        file.save(path)
+        # 4️⃣ Save temporarily
+        apk_path = os.path.join(UPLOAD_FOLDER, file.filename)
+        file.save(apk_path)
 
-        # 5️⃣ Analyze APK (lightweight)
-        result = analyze_apk(path)
+        # 5️⃣ Static APK analysis (FAST)
+        result = analyze_apk(apk_path)
 
-        # 6️⃣ Delete APK after scan (security)
-        os.remove(path)
+        # 6️⃣ Cleanup
+        os.remove(apk_path)
 
         return jsonify(result)
 
     except Exception as e:
         return jsonify({"error": str(e)}), 500
-
-
-@app.route("/", methods=["GET"])
-def home():
-    return "SBI Backend Running"
 
 
 if __name__ == "__main__":

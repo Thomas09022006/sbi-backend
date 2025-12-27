@@ -10,6 +10,7 @@ DANGEROUS_PERMISSIONS = {
 
 def check_permissions(all_permissions):
     dangerous = []
+
     for perm in all_permissions:
         for key in DANGEROUS_PERMISSIONS:
             if key in perm:
@@ -17,4 +18,5 @@ def check_permissions(all_permissions):
                     "permission": key,
                     "risk": DANGEROUS_PERMISSIONS[key]
                 })
+
     return dangerous
