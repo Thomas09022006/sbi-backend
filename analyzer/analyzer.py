@@ -1,10 +1,10 @@
-from androguard.core.bytecodes.apk import APK
+from androguard.core.apk import APK
 from analyzer.permission_engine import check_permissions
 from analyzer.risk_engine import calculate_risk
 
 def analyze_apk(apk_path):
     try:
-        # ⚡ FAST & SAFE: Manifest-only parsing
+        # ✅ FAST + SAFE: Manifest-only parsing
         a = APK(apk_path)
     except Exception as e:
         raise Exception(f"APK parse failed: {e}")
