@@ -10,7 +10,7 @@ CORS(app)
 # CONFIG
 # ===============================
 UPLOAD_FOLDER = "uploads"
-MAX_SIZE_MB = 8  # 🔴 SAFE LIMIT (avoids SIGKILL on Render)
+MAX_SIZE_MB = 8  # SAFE LIMIT for Render free tier
 
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 
@@ -35,7 +35,7 @@ def scan_apk():
 
         if request.content_length > MAX_SIZE_MB * 1024 * 1024:
             return jsonify({
-                "error": f"APK too large. Max allowed {MAX_SIZE_MB} MB (demo limit)"
+                "error": f"APK too large. Max allowed {MAX_SIZE_MB} MB"
             }), 413
 
         file = request.files["apk"]
@@ -47,11 +47,11 @@ def scan_apk():
         if not file.filename.lower().endswith(".apk"):
             return jsonify({"error": "Only APK files allowed"}), 400
 
-        # 4️⃣ Save APK temporarily
+        # 4️⃣ Save temporarily
         apk_path = os.path.join(UPLOAD_FOLDER, file.filename)
         file.save(apk_path)
 
-        # 5️⃣ Static APK analysis
+        # 5️⃣ FAST static analysis (manifest only)
         result = analyze_apk(apk_path)
 
         # 6️⃣ Cleanup
@@ -60,7 +60,6 @@ def scan_apk():
         return jsonify(result)
 
     except Exception as e:
-        # 🔥 IMPORTANT: Proper indentation fixed
         print("🔥 APK ANALYSIS ERROR:", e)
         return jsonify({
             "error": "APK analysis failed",

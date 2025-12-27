@@ -1,7 +1,6 @@
 flask
 flask-cors
 gunicorn
-
 androguard==4.1.2
 lxml
 networkx
